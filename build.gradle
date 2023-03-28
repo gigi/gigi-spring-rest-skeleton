@@ -1,0 +1,193 @@
+buildscript {
+    ext {
+        springBootVersion = '3.0.5'
+        springDependencyManager = '1.1.0'
+        spotlesPluginVersion = '6.17.0'
+        lombokPluginVersion = '1.18.26'
+        liquibasePluginVersion = '2.2.0'
+        liquibaseVersion = '4.19.0' // update when wrong alter fixed (bug since 4.19.1)
+        testcontainersVersion = '1.17.6'
+        mapStructVersion = '1.5.3.Final'
+        hibernateValidatorVersion = '8.0.0.Final'
+        springdocVersion = '2.0.4'
+        picocliVersion = '4.6.1'
+        sonarqubePlugin = '4.0.0.2929'
+        spotbugsPluginVersion = '5.0.13'
+        spotbugsVersion = '4.7.3'
+        gradleDockerComposePluginVersion = '0.16.12'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${springDependencyManager}"
+    id 'com.diffplug.spotless' version "${spotlesPluginVersion}"
+    id 'org.liquibase.gradle' version "${liquibasePluginVersion}"
+    id 'jacoco'
+    id 'org.sonarqube' version "${sonarqubePlugin}"
+    id 'com.github.spotbugs' version "${spotbugsPluginVersion}"
+    id 'com.avast.gradle.docker-compose' version "${gradleDockerComposePluginVersion}"
+}
+
+group = 'gigi'
+version = '0.0.1'
+sourceCompatibility = '17'
+archivesBaseName = 'app'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+    implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
+    implementation "org.mapstruct:mapstruct:${mapStructVersion}"
+
+    // order matters to avoid
+    // No property named "xxx" exists in source parameter(s)
+    annotationProcessor "org.projectlombok:lombok:${lombokPluginVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    compileOnly "org.projectlombok:lombok:${lombokPluginVersion}"
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+
+    // Liquibase specific
+    liquibaseRuntime "org.liquibase:liquibase-core:${liquibaseVersion}"
+    liquibaseRuntime "info.picocli:picocli:${picocliVersion}"
+    liquibaseRuntime 'org.postgresql:postgresql'
+    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate6:${liquibaseVersion}"
+    liquibaseRuntime sourceSets.main.output
+}
+
+dockerCompose {
+    // https://github.com/avast/gradle-docker-compose-plugin/issues/372
+    composeAdditionalArgs = ['--compatibility']
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+    }
+}
+
+springBoot {
+    // to be able to get app version
+    buildInfo()
+}
+
+spotless {
+    java {
+        removeUnusedImports()
+        googleJavaFormat('1.16.0')
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+
+    dependsOn test
+}
+
+sonarqube {
+    properties {
+        property 'sonarjava.source', '17'
+        property 'sonar.java.coveragePlugin', 'jacoco'
+        property 'sonar.host.url', 'http://localhost:9000'
+        property 'sonar.login', 'admin'
+        property 'sonar.password', 'admin1'
+    }
+}
+
+spotbugs {
+    toolVersion = "${spotbugsVersion}"
+    excludeFilter = file("findbugs-exclude-filter.xml")
+}
+
+spotbugsMain {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+spotbugsTest {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+configurations.liquibaseRuntime.extendsFrom configurations.implementation
+
+liquibase {
+
+    diffChangelog.dependsOn assemble
+    update.dependsOn assemble
+
+    def props = {
+        def props = new Properties()
+        InputStream is
+        def springPropertiesFile = new File("src/main/resources/application.properties")
+        is = new FileInputStream(springPropertiesFile)
+        props.load(is)
+        is.close()
+        props["url"] = props["spring.datasource.url"]
+        props["username"] = props["spring.datasource.username"]
+        props["password"] = props["spring.datasource.password"]
+        props["changeLogFile"] = props["spring.liquibase.change-log"]
+
+        return props;
+    }
+
+    def migrationName = { suffix = '' ->
+        suffix = !suffix.allWhitespace ? "-".concat(suffix) : suffix
+        return new Date().format("yyyyMMddHHmmss") << suffix << ".sql"
+    }
+
+    activities {
+        def connectionProperties = props();
+        if (project.gradle.startParameter.taskNames[0] == "diffChangelog") {
+            connectionProperties["changeLogFile"] = "src/main/resources/db/migrations/" + migrationName()
+        }
+        main {
+            changeLogFile connectionProperties["changeLogFile"]
+            url connectionProperties['url']
+            referenceUrl "hibernate:spring:${group}?dialect=org.hibernate.dialect.PostgreSQL95Dialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+            username connectionProperties['username']
+            password connectionProperties['password']
+            logLevel "info"
+        }
+    }
+}
+
+tasks.named('compileJava') {
+    inputs.files(tasks.named('processResources'))
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('sonar').configure {
+    dependsOn jacocoTestReport
+}

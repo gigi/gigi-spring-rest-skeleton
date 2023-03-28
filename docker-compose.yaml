@@ -1,0 +1,27 @@
+# Use for local development only
+version: '3.7'
+services:
+  postgres:
+    container_name: gigi-skeleton-postgres
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    command: ["postgres", "-c", "log_statement=all"]
+
+  sonarqube:
+    container_name: gigi-skeleton-sonarqube
+    # use if you want to use the official image without FindBugs plugin
+    #    image: sonarqube:lts-community
+    build:
+      # lts-community official image with FindBugs plugin installed
+      dockerfile: resources/sonarqube/Dockerfile
+    environment:
+      SONAR_FORCEAUTHENTICATION: false
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
