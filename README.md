@@ -66,11 +66,15 @@ docker-compose up -d postgres && ./gradlew bootRun --args='--spring.profiles.act
 ```
 
 This command will start PostgreSQL 15 using docker-compose.yaml file, build the application and run it on
-port 8080. Default credentials will be used (postgres:postgres).
+port 8080. Default credentials will be used (postgres:postgres/postgres).
 
 `dev` and `sqldebug` profiles enables Spring Boot Actuator endpoints, SQL debug logging and expose Swagger endpoint.
 
 After start, you can find the API documentation at http://localhost:8080/docs/swagger-ui/index.html.
+
+
+![Swagger UI](resources/doc/images/swagger-ui.png)
+
 
 If you are using IntelliJ IDEA, add profiles `dev` and `sqldebug` to the `Active profiles` field in
 the `Run/Debug Configurations` window.
@@ -81,7 +85,8 @@ the `Run/Debug Configurations` window.
 
 Application shows one of the possible ways to organize a Spring Boot 3 REST API project. API allows users to
 create/read/update posts, and
-add tags for them. The list of posts can be paginated for easier navigation.
+add tags for these posts. 
+The list of posts can be paginated for easier navigation.
 
 ### Local development
 
@@ -103,7 +108,7 @@ or just
 docker-compose up
 ```
 
-to shut down dependencies when the work is finished:
+To shut down dependencies when the work is finished:
 
 ```bash
 make down
@@ -123,6 +128,7 @@ docker-compose down
 
 > **Warning:**
 > Gradle Docker Compose plugin has issues with container naming so use only one way to start/stop containers.
+> 
 > See https://github.com/avast/gradle-docker-compose-plugin/issues/372 for more information.
 
 ### Data model and domain
@@ -130,8 +136,9 @@ docker-compose down
 The layers in this application are separated from each other, with each layer having its own entities and mappers.
 
 For demonstration purposes, the application uses simple [Domain entities](src/main/java/gigi/restskeleton/model/domain):
-Post and Author. Post has a relation to Author
-just to showcase the potential of the MapStruct mapper. If you are a true DDD fan, it is recommended to use just the
+Post and Author represented as Java Records.
+
+Post has a relation to Author just to showcase the potential of the MapStruct mapper. If you are a true DDD fan, it is recommended to use just the
 AuthorID reference inside the Post aggregate.
 
 The corresponding [JPA entities](src/main/java/gigi/restskeleton/model/orm) are used only to access data and perform
@@ -144,10 +151,10 @@ However, it is recommended to stick to immutable entities as much as possible. A
 constructor private. Create an all-arguments constructor and avoid using setters. Hibernate will take care of the rest.
 
 The JPA specification itself is not compatible with the classic DDD approach. For more information, please
-see https://www.baeldung.com/spring-persisting-ddd-aggregates).
+see https://www.baeldung.com/spring-persisting-ddd-aggregates.
 
-The service layer exposes only domain entities, not JPA entities.
-See [mapper](src/main/java/gigi/restskeleton/model/service/ModelMapper.java)
+The service layer exposes to controller only domain entities, not JPA entities.
+See [ModelMapper](src/main/java/gigi/restskeleton/model/service/ModelMapper.java).
 
 The presentation layer uses its own mapper to convert business entities to
 to [Responses](src/main/java/gigi/restskeleton/api/v1/response).
@@ -168,7 +175,7 @@ or
 ./gradlew diffChangelog
 ```
 
-SQL migration will be created in [src/main/resources/db/migrations](src/main/resources/db/migrations) folder.
+SQL migration will be created in [src/main/resources/db/migrations](src/main/resources/db/migrations) folder and named according to current time.
 
 By default, credentials from [src/main/resources/application.properties](src/main/resources/application.properties) will
 be used.
