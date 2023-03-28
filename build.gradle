@@ -5,7 +5,9 @@ buildscript {
         spotlesPluginVersion = '6.17.0'
         lombokPluginVersion = '1.18.26'
         liquibasePluginVersion = '2.2.0'
-        liquibaseVersion = '4.19.0' // update when wrong alter fixed (bug since 4.19.1)
+        // update when wrong alter fixed (bug since 4.19.1)
+        // https://github.com/liquibase/liquibase/issues/4047
+        liquibaseVersion = '4.19.0'
         testcontainersVersion = '1.17.6'
         mapStructVersion = '1.5.3.Final'
         hibernateValidatorVersion = '8.0.0.Final'
