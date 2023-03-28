@@ -1,10 +1,28 @@
 # Spring Boot 3 REST API skeleton
 
-This is a skeleton for a Spring Boot 3 REST API.
+This is a skeleton REST API template project for Spring Boot 3.
 
 Yet another attempt to combine the newest tech stack with a clean architecture.
 
 This project can be used as a starting point for new projects, or as a reference for any Spring Boot 3 based projects.
+
+## Table of contents
+<!-- TOC -->
+  * [What's included](#whats-included)
+  * [Requirements](#requirements)
+  * [Quick start](#quick-start)
+  * [Overview](#overview)
+    * [Local development](#local-development)
+    * [Data model and domain](#data-model-and-domain)
+    * [Migrations](#migrations)
+    * [Problem Details for HTTP APIs (RFC7807)](#problem-details-for-http-apis--rfc7807-)
+    * [Code analysis](#code-analysis)
+    * [SonarQube](#sonarqube)
+    * [Testing](#testing)
+    * [Code formatting](#code-formatting)
+    * [Production build](#production-build)
+  * [TODO](#todo)
+<!-- TOC -->
 
 > **Note:**
 > I recommend using Spring Boot 2.7.x for new enterprise projects as of March 2023.
@@ -18,11 +36,10 @@ This project can be used as a starting point for new projects, or as a reference
 - [Spring Boot 3.0.5](https://spring.io/projects/spring-boot)
 - [Gradle 7.6.1](https://gradle.org/)
 - [PostgreSQL 15](https://www.postgresql.org/) in Docker for local development
-- [Spring Data JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/) for database access
+- [Spring Data JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/) as data layer
 - [Spring MVC](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web) for building REST API
 - [Liquibase 4.18.0 ](https://www.liquibase.org/) for database migrations
 - [MapStruct 1.5.3](https://mapstruct.org/) for mapping data between layers
-- docker-compose.yaml file for running the application locally
 - [Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) for
   monitoring and management
 - [SonarQube 9.9 LTS](https://www.sonarsource.com/products/sonarqube/downloads/lts/9-9-lts/) in Dockerfile
@@ -156,8 +173,7 @@ see https://www.baeldung.com/spring-persisting-ddd-aggregates.
 The service layer exposes to controller only domain entities, not JPA entities.
 See [ModelMapper](src/main/java/gigi/restskeleton/model/service/ModelMapper.java).
 
-The presentation layer uses its own mapper to convert business entities to
-to [Responses](src/main/java/gigi/restskeleton/api/v1/response).
+The presentation layer uses its own mapper to convert business entities to [Responses](src/main/java/gigi/restskeleton/api/v1/response).
 See [ResponseMapper](src/main/java/gigi/restskeleton/api/v1/ResponseMapper.java)
 
 ### Migrations
@@ -192,7 +208,7 @@ This skeleton extends this functionality with custom error codes.
 For validation errors additional property `violations` added with [422 Unprocessable Entity](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/422)
 status code.
 
-See [src/main/java/gigi/restskeleton/api/v1/controller/GlobalExceptionHandler.java](src/main/java/gigi/restskeleton/api/v1/controller/GlobalExceptionHandler.java)
+See [GlobalExceptionHandler.java](src/main/java/gigi/restskeleton/api/v1/controller/GlobalExceptionHandler.java)
 
 ### Code analysis
 
@@ -207,7 +223,7 @@ The Spotbugs task is configured to run automatically on every build against main
 SonarQube is a static code analysis tool. It can be used to detect bugs, vulnerabilities and code smells in your code.
 It can also measure and track your technical debt.
 
-To analyze the code bring up local dependencies from the docker-compose.yaml file then run:
+To analyze the code start SonarQube server from the the docker-compose.yaml file `docker-compose up sonarqube` (if not run yet) then run:
 
 ```bash
 ./gradlew sonar
@@ -226,7 +242,7 @@ For more information see https://www.sonarsource.com/products/sonarqube/
 
 ### Testing
 
-Integration and unit test run together. To run tests use:
+Integration and unit tests run together. To run tests use:
 
 ```bash
 make test
@@ -239,8 +255,8 @@ or
 ```
 
 Integration tests rely on [Testcontainers](https://www.testcontainers.org/) library.
-Use [srv/java/gigi/rest-skeleton/rest-skeleton/src/test/java/gigi/restskeleton/AbstractDataSourceTest.java](src/test/java/gigi/restskeleton/AbstractDataSourceTest.java)
-as starting point.
+Use [AbstractDataSourceTest.java](src/test/java/gigi/restskeleton/AbstractDataSourceTest.java)
+as starting point. Extend this class with your integration test class (use [PostRepositoryTest.java](src/test/java/gigi/restskeleton/model/repository/PostRepositoryTest.java) as example).
 
 ### Code formatting
 
@@ -252,7 +268,7 @@ To format the code according to [Google Java Style Guide](https://google.github.
 
 ### Production build
 
-If you are ready to deploy your application to production in docker environment, you can build a docker image with:
+If you want to deploy your application to production using docker, you can build a docker image with this command:
 
 ```bash
 make docker
@@ -261,14 +277,13 @@ make docker
 or
 
 ```bash
-./gradlew clean bootJar && docker build -t gigi/gigi-spring-rest-skeleton:latest .```
+./gradlew clean bootJar && docker build -t gigi/gigi-spring-rest-skeleton:latest .
 ```
 
 The docker image will be built using [azul/zulu-openjdk-alpine:17-jre](https://hub.docker.com/r/azul/zulu-openjdk-alpine/tags).
 If the image size matters, use jlink to create a custom runtime image.
 
-For more information about containerized java applications:
-
+For more information about containerized java applications please follow:
 - https://thecattlecrew.net/2022/11/07/preparing-for-spring-boot-3-choose-the-right-java-17-base-image/
 - https://badass-jlink-plugin.beryx.org/releases/latest/
 
