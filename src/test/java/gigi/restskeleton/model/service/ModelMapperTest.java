@@ -35,7 +35,7 @@ class ModelMapperTest {
 
     Post result = modelMapper.map(source);
 
-    Post excepted =
+    Post expected =
         new Post(
             postId,
             "title",
@@ -44,6 +44,6 @@ class ModelMapperTest {
             new Author("nickname"),
             Set.of("tag1", "tag2"));
 
-    assertThat(result).isEqualTo(excepted);
+    assertThat(result).isEqualTo(expected);
   }
 }

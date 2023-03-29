@@ -32,7 +32,7 @@ class ResponseMapperTest {
 
     PostResponse result = responseMapper.map(source);
 
-    PostResponse excepted =
+    PostResponse expected =
         new PostResponse(
             postId.toString(),
             "title",
@@ -41,6 +41,6 @@ class ResponseMapperTest {
             new AuthorResponse("nickname"),
             Set.of("tag1", "tag2"));
 
-    assertThat(result).isEqualTo(excepted);
+    assertThat(result).isEqualTo(expected);
   }
 }
