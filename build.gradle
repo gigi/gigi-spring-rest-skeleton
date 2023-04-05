@@ -1,3 +1,5 @@
+import com.github.spotbugs.snom.SpotBugsReport
+
 buildscript {
     ext {
         springBootVersion = '3.0.5'
@@ -126,17 +128,17 @@ spotbugs {
 }
 
 spotbugsMain {
-    reports {
+    reports({
         xml.enabled = false
         html.enabled = true
-    }
+    } as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>)
 }
 
 spotbugsTest {
-    reports {
+    reports({
         xml.enabled = false
         html.enabled = true
-    }
+    } as Closure<NamedDomainObjectContainer<? extends SpotBugsReport>>)
 }
 
 configurations.liquibaseRuntime.extendsFrom configurations.implementation
@@ -158,7 +160,7 @@ liquibase {
         props["password"] = props["spring.datasource.password"]
         props["changeLogFile"] = props["spring.liquibase.change-log"]
 
-        return props;
+        return props
     }
 
     def migrationName = { suffix = '' ->
@@ -167,7 +169,7 @@ liquibase {
     }
 
     activities {
-        def connectionProperties = props();
+        def connectionProperties = props()
         if (project.gradle.startParameter.taskNames[0] == "diffChangelog") {
             connectionProperties["changeLogFile"] = "src/main/resources/db/migrations/" + migrationName()
         }
