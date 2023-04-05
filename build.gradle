@@ -91,11 +91,6 @@ dependencyManagement {
     }
 }
 
-springBoot {
-    // to be able to get app version
-    buildInfo()
-}
-
 spotless {
     java {
         removeUnusedImports()
@@ -123,8 +118,8 @@ sonarqube {
 }
 
 spotbugs {
-    toolVersion = "${spotbugsVersion}"
-    excludeFilter = file("findbugs-exclude-filter.xml")
+    setToolVersion("${spotbugsVersion}")
+    setExcludeFilter(file("findbugs-exclude-filter.xml"))
 }
 
 spotbugsMain {
@@ -163,7 +158,7 @@ liquibase {
         return props
     }
 
-    def migrationName = { suffix = '' ->
+    def migrationName = { String suffix = '' ->
         suffix = !suffix.allWhitespace ? "-".concat(suffix) : suffix
         return new Date().format("yyyyMMddHHmmss") << suffix << ".sql"
     }
@@ -173,14 +168,14 @@ liquibase {
         if (project.gradle.startParameter.taskNames[0] == "diffChangelog") {
             connectionProperties["changeLogFile"] = "src/main/resources/db/migrations/" + migrationName()
         }
-        main {
+        setMain({
             changeLogFile connectionProperties["changeLogFile"]
             url connectionProperties['url']
             referenceUrl "hibernate:spring:${group}?dialect=org.hibernate.dialect.PostgreSQL95Dialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
             username connectionProperties['username']
             password connectionProperties['password']
             logLevel "info"
-        }
+        })
     }
 }
 
