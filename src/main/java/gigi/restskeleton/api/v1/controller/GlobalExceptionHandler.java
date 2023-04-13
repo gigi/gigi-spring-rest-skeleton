@@ -56,7 +56,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return buildProblemDetail(exception, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler({Exception.class, RuntimeException.class})
+  @ExceptionHandler({Exception.class})
   ApiErrorResponse handleAll(Exception exception) {
     return buildProblemDetail(exception, HttpStatus.INTERNAL_SERVER_ERROR);
   }
