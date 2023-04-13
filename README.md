@@ -19,6 +19,7 @@ This project can be used as a starting point for new projects, or as a reference
     * [Code analysis](#code-analysis)
     * [SonarQube](#sonarqube)
     * [Testing](#testing)
+    * [Live restart](#live-restart)
     * [Code formatting](#code-formatting)
     * [Production build](#production-build)
   * [TODO](#todo)
@@ -50,6 +51,8 @@ This project can be used as a starting point for new projects, or as a reference
 - [SpringDoc OpenApi v2](https://springdoc.org/v2/) for API documentation
 - [Spotless Plugin](https://github.com/diffplug/spotless/tree/main/plugin-gradle#google-java-format)
   with [google-java-format](https://github.com/google/google-java-format) enabled for code formatting
+- [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/current/reference/html/using-spring-boot.html#using-boot-devtools)
+  for live restart
 - [Testcontainers](https://www.testcontainers.org/) for integration tests
 
 See full list of actual dependencies in [build.gradle](build.gradle) file.
@@ -257,6 +260,16 @@ or
 Integration tests rely on [Testcontainers](https://www.testcontainers.org/) library.
 Use [AbstractDataSourceTest.java](src/test/java/gigi/restskeleton/AbstractDataSourceTest.java)
 as starting point. Extend this class with your integration test class (use [PostRepositoryTest.java](src/test/java/gigi/restskeleton/model/repository/PostRepositoryTest.java) as example).
+
+### Live restart
+
+If you use IntelliJ IDEA, you may configure automatic restart of the application after code changes. 
+For `2022` and newer versions of IntelliJ IDEA,
+open settings and go to `Build, Execution, Deployment > Compiler > Build project automatically`. Check the box. 
+
+Then go to `Advanced Settings, Compiler > Allow auto-make to start even if developed application is currently running`. Check the box.
+
+For more information see https://docs.spring.io/spring-boot/docs/current/reference/html/using.html#using.devtools.restart
 
 ### Code formatting
 
