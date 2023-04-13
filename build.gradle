@@ -115,7 +115,7 @@ sonarqube {
         property 'sonar.java.coveragePlugin', 'jacoco'
         property 'sonar.host.url', 'http://localhost:9000'
         property 'sonar.login', 'admin'
-        property 'sonar.password', 'admin1'
+        property 'sonar.password', 'admin'
     }
 }
 

@@ -1,6 +1,7 @@
 package gigi.restskeleton.api.v1.controller;
 
 import gigi.restskeleton.api.v1.response.ApiErrorResponse;
+import gigi.restskeleton.model.exception.ApplicationRuntimeException;
 import gigi.restskeleton.model.exception.PostNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return createResponseEntity(problemDetail, headers, HttpStatus.UNPROCESSABLE_ENTITY, request);
   }
 
-  @ExceptionHandler({IllegalArgumentException.class})
+  @ExceptionHandler({IllegalArgumentException.class, ApplicationRuntimeException.class})
   ApiErrorResponse handleIllegalArgument(IllegalArgumentException exception) {
     return buildProblemDetail(exception, HttpStatus.BAD_REQUEST);
   }
