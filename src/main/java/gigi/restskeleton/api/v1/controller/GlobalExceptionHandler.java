@@ -57,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({Exception.class, RuntimeException.class})
-  ApiErrorResponse handleBookmarkNotFoundException(Exception exception) {
+  ApiErrorResponse handleAll(Exception exception) {
     return buildProblemDetail(exception, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
