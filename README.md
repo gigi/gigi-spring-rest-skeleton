@@ -34,8 +34,8 @@ This project can be used as a starting point for new projects, or as a reference
 
 ## What's included
 
-- [Spring Boot 3.0.5](https://spring.io/projects/spring-boot)
-- [Gradle 7.6.1](https://gradle.org/)
+- [Spring Boot 3.1.1](https://spring.io/projects/spring-boot)
+- [Gradle 8.1.1](https://gradle.org/)
 - [PostgreSQL 15](https://www.postgresql.org/) in Docker for local development
 - [Spring Data JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/) as data layer
 - [Spring MVC](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web) for building REST API

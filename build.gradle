@@ -2,7 +2,7 @@ import com.github.spotbugs.snom.SpotBugsReport
 
 buildscript {
     ext {
-        springBootVersion = '3.0.5'
+        springBootVersion = '3.1.1'
         springDependencyManager = '1.1.0'
         spotlesPluginVersion = '6.17.0'
         lombokPluginVersion = '1.18.26'
@@ -102,8 +102,8 @@ spotless {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required = true
+        html.required = true
     }
 
     dependsOn test
