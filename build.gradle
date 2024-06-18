@@ -2,23 +2,23 @@ import com.github.spotbugs.snom.SpotBugsReport
 
 buildscript {
     ext {
-        springBootVersion = '3.1.1'
-        springDependencyManager = '1.1.0'
-        spotlesPluginVersion = '6.17.0'
-        lombokPluginVersion = '1.18.26'
-        liquibasePluginVersion = '2.2.0'
-        // update when wrong alter fixed (bug since 4.19.1)
-        // https://github.com/liquibase/liquibase/issues/4047
-        liquibaseVersion = '4.19.0'
-        testcontainersVersion = '1.17.6'
-        mapStructVersion = '1.5.3.Final'
-        hibernateValidatorVersion = '8.0.0.Final'
-        springdocVersion = '2.0.4'
-        picocliVersion = '4.6.1'
-        sonarqubePlugin = '4.0.0.2929'
-        spotbugsPluginVersion = '5.0.13'
-        spotbugsVersion = '4.7.3'
-        gradleDockerComposePluginVersion = '0.16.12'
+        springBootVersion = '3.3.0'
+        springDependencyManager = '1.1.5'
+        spotlesPluginVersion = '6.25.0'
+        lombokPluginVersion = '8.6'
+        liquibasePluginVersion = '2.2.2'
+        // 4.28.0 generates empty changelog
+        // see https://github.com/liquibase/liquibase/issues/5943
+        liquibaseVersion = '4.27.0'
+        testcontainersVersion = '1.19.8'
+        mapStructVersion = '1.5.5.Final'
+        hibernateValidatorVersion = '8.0.1.Final'
+        springdocVersion = '2.5.0'
+        picocliVersion = '4.7.6'
+        sonarqubePlugin = '5.0.0.4638'
+        spotbugsPluginVersion = '6.0.17'
+        spotbugsVersion = '4.8.6'
+        gradleDockerComposePluginVersion = '0.17.7'
     }
 }
 
@@ -32,16 +32,22 @@ plugins {
     id 'org.sonarqube' version "${sonarqubePlugin}"
     id 'com.github.spotbugs' version "${spotbugsPluginVersion}"
     id 'com.avast.gradle.docker-compose' version "${gradleDockerComposePluginVersion}"
+    id 'io.freefair.lombok' version "${lombokPluginVersion}"
 }
 
 group = 'gigi'
 version = '0.0.1'
-sourceCompatibility = '17'
 archivesBaseName = 'app'
 
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -59,13 +65,9 @@ dependencies {
     implementation "org.liquibase:liquibase-core:${liquibaseVersion}"
     implementation "org.mapstruct:mapstruct:${mapStructVersion}"
 
-    // order matters to avoid
-    // No property named "xxx" exists in source parameter(s)
-    annotationProcessor "org.projectlombok:lombok:${lombokPluginVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-    compileOnly "org.projectlombok:lombok:${lombokPluginVersion}"
     runtimeOnly 'org.postgresql:postgresql'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -96,7 +98,7 @@ dependencyManagement {
 spotless {
     java {
         removeUnusedImports()
-        googleJavaFormat('1.16.0')
+        googleJavaFormat('1.22.0')
     }
 }
 
@@ -111,7 +113,7 @@ jacocoTestReport {
 
 sonarqube {
     properties {
-        property 'sonarjava.source', '17'
+        property 'sonarjava.source', '21'
         property 'sonar.java.coveragePlugin', 'jacoco'
         property 'sonar.host.url', 'http://localhost:9000'
         property 'sonar.login', 'admin'
@@ -173,10 +175,11 @@ liquibase {
         setMain({
             changeLogFile connectionProperties["changeLogFile"]
             url connectionProperties['url']
-            referenceUrl "hibernate:spring:${group}?dialect=org.hibernate.dialect.PostgreSQL95Dialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
             username connectionProperties['username']
             password connectionProperties['password']
             logLevel "info"
+            referenceUrl "hibernate:spring:${group}?dialect=org.hibernate.dialect.PostgreSQLDialect&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy&&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
+
         })
     }
 }

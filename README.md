@@ -25,22 +25,15 @@ This project can be used as a starting point for new projects, or as a reference
   * [TODO](#todo)
 <!-- TOC -->
 
-> **Note:**
-> I recommend using Spring Boot 2.7.x for new enterprise projects as of March 2023.
-> Spring Boot 2.7.x has more stable dependencies and more relevant examples
-> available online, especially for working with JPA and Hibernate 6. This is based on my personal experience working
-> with
-> this skeleton.
-
 ## What's included
 
-- [Spring Boot 3.1.1](https://spring.io/projects/spring-boot)
-- [Gradle 8.1.1](https://gradle.org/)
+- [Spring Boot 3.3.0](https://spring.io/projects/spring-boot)
+- [Gradle 8.5](https://gradle.org/)
 - [PostgreSQL 15](https://www.postgresql.org/) in Docker for local development
 - [Spring Data JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/) as data layer
 - [Spring MVC](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#web) for building REST API
-- [Liquibase 4.18.0 ](https://www.liquibase.org/) for database migrations
-- [MapStruct 1.5.3](https://mapstruct.org/) for mapping data between layers
+- [Liquibase 4.27.0 ](https://www.liquibase.org/) for database migrations
+- [MapStruct 1.5.5](https://mapstruct.org/) for mapping data between layers
 - [Actuator](https://docs.spring.io/spring-boot/docs/current/reference/html/actuator.html) for
   monitoring and management
 - [SonarQube 9.9 LTS](https://www.sonarsource.com/products/sonarqube/downloads/lts/9-9-lts/) in Dockerfile
@@ -59,9 +52,9 @@ See full list of actual dependencies in [build.gradle](build.gradle) file.
 
 ## Requirements
 
-- Java Development Kit 17 (for
-  example [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html)
-  or [Liberica JDK](https://bell-sw.com/pages/downloads/#/java-17-lts))
+- Java Development Kit 21 (for
+  example [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html)
+  or [Liberica JDK](https://bell-sw.com/pages/downloads/#jdk-21-lts))
 - [Docker](https://www.docker.com/) for local development and testing
 - Make utility for your system (optional)
 
@@ -293,7 +286,7 @@ or
 ./gradlew clean bootJar && docker build -t gigi/gigi-spring-rest-skeleton:latest .
 ```
 
-The docker image will be built using [azul/zulu-openjdk-alpine:17-jre](https://hub.docker.com/r/azul/zulu-openjdk-alpine/tags).
+The docker image will be built using [azul/zulu-openjdk-alpine:21-jre](https://hub.docker.com/r/azul/zulu-openjdk-alpine/tags).
 If the image size matters, use jlink to create a custom runtime image.
 
 For more information about containerized java applications please follow:
