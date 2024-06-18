@@ -297,7 +297,7 @@ For more information about containerized java applications please follow:
 
 - [ ] Add GitHub CI
 - [ ] Add Spring Security for demonstration purposes
-- [ ] Update Liquibase when unnecessary alter statements issue will be fixed (https://github.com/liquibase/liquibase/issues/4047)
-- [ ] Update Gradle to 8.1 when it will be released and tested with Spring Boot 3
+- [x] Update Liquibase when unnecessary alter statements issue will be fixed (https://github.com/liquibase/liquibase/issues/4047)
+- [x] Update Gradle to 8.1 when it will be released and tested with Spring Boot 3
 - [ ] Obtain key for SonarQube instead of password usage
 - [ ] Separate unit and integration tests
